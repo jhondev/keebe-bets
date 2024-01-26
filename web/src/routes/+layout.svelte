@@ -2,6 +2,8 @@
 	import { AppShell } from '@skeletonlabs/skeleton';
 
 	import '../app.pcss';
+	import SideBarLeft from './side-bar-left.svelte';
+	import Footer from './footer.svelte';
 </script>
 
 <AppShell
@@ -18,15 +20,14 @@
 				<li><a href="/bets1">Bets1</a></li>
 				<li><a href="/bets2">Bets2</a></li>
 				<li><a href="/bets3">Bets3</a></li>
-				<li><a href="/bets4">Bets4</a></li>
+				<li><a href="/search">Search</a></li>
 			</ul>
 		</div>
 	</svelte:fragment>
-	<svelte:fragment slot="sidebarLeft"></svelte:fragment>
+	<svelte:fragment slot="sidebarLeft"><SideBarLeft /></svelte:fragment>
 	<svelte:fragment slot="sidebarRight"></svelte:fragment>
-	<!-- <svelte:fragment slot="pageHeader"></svelte:fragment> -->
 
 	<slot />
 
-	<svelte:fragment slot="footer"></svelte:fragment>
+	<svelte:fragment slot="footer"><Footer /></svelte:fragment>
 </AppShell>
