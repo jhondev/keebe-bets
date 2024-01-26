@@ -42,5 +42,12 @@
 		"yarn": "Please use pnpm instead of yarn.",
 		"pnpm": ">= 8.0.0",
 		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"bits-ui": "^0.15.1",
+		"clsx": "^2.1.0",
+		"lucide-svelte": "^0.315.0",
+		"tailwind-merge": "^2.2.1",
+		"tailwind-variants": "^0.1.20"
 	}
 }
