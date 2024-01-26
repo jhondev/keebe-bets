@@ -1,33 +1,44 @@
-<script>
-	import { AppShell } from '@skeletonlabs/skeleton';
-
-	import '../app.pcss';
-	import SideBarLeft from './side-bar-left.svelte';
-	import Footer from './footer.svelte';
+<script lang="ts">
+	import '../app.postcss';
+	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 </script>
 
-<AppShell
-	class=""
-	slotSidebarLeft="h-full p-3"
-	slotPageContent="px-5 py-4"
-	slotSidebarRight="h-full p-3"
->
+<!-- App Shell -->
+<AppShell>
 	<svelte:fragment slot="header">
-		<div class="flex flex-row gap-10">
-			<div>logo</div>
-			<ul class="flex flex-row gap-10">
-				<li><a href="/">Home</a></li>
-				<li><a href="/bets1">Bets1</a></li>
-				<li><a href="/bets2">Bets2</a></li>
-				<li><a href="/bets3">Bets3</a></li>
-				<li><a href="/search">Search</a></li>
-			</ul>
-		</div>
+		<!-- App Bar -->
+		<AppBar>
+			<svelte:fragment slot="lead">
+				<strong class="text-xl uppercase">Skeleton</strong>
+			</svelte:fragment>
+			<svelte:fragment slot="trail">
+				<a
+					class="btn btn-sm variant-ghost-surface"
+					href="https://discord.gg/EXqV7W8MtY"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Discord
+				</a>
+				<a
+					class="btn btn-sm variant-ghost-surface"
+					href="https://twitter.com/SkeletonUI"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Twitter
+				</a>
+				<a
+					class="btn btn-sm variant-ghost-surface"
+					href="https://github.com/skeletonlabs/skeleton"
+					target="_blank"
+					rel="noreferrer"
+				>
+					GitHub
+				</a>
+			</svelte:fragment>
+		</AppBar>
 	</svelte:fragment>
-	<svelte:fragment slot="sidebarLeft"><SideBarLeft /></svelte:fragment>
-	<svelte:fragment slot="sidebarRight"></svelte:fragment>
-
+	<!-- Page Route Content -->
 	<slot />
-
-	<svelte:fragment slot="footer"><Footer /></svelte:fragment>
 </AppShell>
