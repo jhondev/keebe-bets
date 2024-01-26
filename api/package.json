@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "@bufbuild/buf": "^1.28.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.7.1",
+    "prisma-dbml-generator": "^0.10.0",
+    "prisma-erd-generator": "^1.11.2"
+  },
+  "engines": {
+    "npm": "Please use pnpm instead of npm.",
+    "yarn": "Please use pnpm instead of yarn.",
+    "pnpm": ">= 8.0.0",
+    "node": ">=18.0.0"
+  }
+}
