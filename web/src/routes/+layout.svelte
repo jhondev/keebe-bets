@@ -2,6 +2,7 @@
 	import '../app.postcss';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import SideBarLeft from './side-bar-left.svelte';
+	import SideBarRight from './side-bar-right.svelte';
 
 	export let data;
 	const { games } = data;
@@ -9,12 +10,13 @@
 
 <AppShell
 	slotSidebarLeft="bg-surface-500/5 w-56 p-4"
+	slotSidebarRight="bg-surface-500/5 w-96 p-4"
 	slotPageContent="container flex flex-col h-full mx-auto px-5 py-4"
 >
 	<svelte:fragment slot="header">
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<a href="/">
+				<a href="/" class="">
 					<strong class="text-2xl pl-4">Keebe Bets</strong>
 				</a>
 			</svelte:fragment>
@@ -24,6 +26,9 @@
 
 	<svelte:fragment slot="sidebarLeft">
 		<SideBarLeft {games} />
+	</svelte:fragment>
+	<svelte:fragment slot="sidebarRight">
+		<SideBarRight />
 	</svelte:fragment>
 
 	<!-- Page Route Content -->
