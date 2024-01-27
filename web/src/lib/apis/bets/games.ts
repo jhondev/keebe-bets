@@ -1,16 +1,112 @@
 export type Game = {
 	slug: string;
 	name: string;
-	imgUrl: string;
+	boxUrl: string;
+	bannerUrl: string;
+	avatarUrl: string;
 };
-export const games: Game[] = [
-	{ slug: 'all', name: 'All Games', imgUrl: '/public/box-all.png' },
-	{ slug: 'lol', name: 'League of Legends', imgUrl: '/public/box-lol.png' },
-	{ slug: 'dota', name: 'Dota', imgUrl: '/public/box-dota.png' },
-	{ slug: 'csgo', name: 'CS:GO', imgUrl: '/public/box-csgo.png' },
-	{ slug: 'smite', name: 'Smite', imgUrl: '/public/box-smite.png' },
-	{ slug: 'heartstone', name: 'HeartStone', imgUrl: '/public/box-heartstone.png' },
-	{ slug: 'heroes', name: 'Heroes of the Storm', imgUrl: '/public/box-heroes.png' },
-	{ slug: 'startcraft', name: 'StartCraft', imgUrl: '/public/box-startcraft.png' },
-	{ slug: 'worldoftanks', name: 'World of Tanks', imgUrl: '/public/box-worldoftanks.png' }
-];
+
+export const games: Map<string, Game> = new Map([
+	[
+		'all',
+		{
+			slug: 'all',
+			name: 'All Games',
+			boxUrl: '/public/box-all.png',
+			bannerUrl: '/public/banner-all.png',
+			avatarUrl: '/public/avatar-all.png'
+		}
+	],
+	[
+		'lol',
+		{
+			slug: 'lol',
+			name: 'League of Legends',
+			boxUrl: '/public/box-lol.png',
+			bannerUrl: '/public/banner-lol.png',
+			avatarUrl: '/public/avatar-lol.png'
+		}
+	],
+	[
+		'dota',
+		{
+			slug: 'dota',
+			name: 'Dota',
+			boxUrl: '/public/box-dota.png',
+			bannerUrl: '/public/banner-dota.png',
+			avatarUrl: '/public/avatar-dota.png'
+		}
+	],
+	[
+		'csgo',
+		{
+			slug: 'csgo',
+			name: 'CS:GO',
+			boxUrl: '/public/box-csgo.png',
+			bannerUrl: '/public/banner-csgo.png',
+			avatarUrl: '/public/avatar-csgo.png'
+		}
+	],
+	[
+		'smite',
+		{
+			slug: 'smite',
+			name: 'Smite',
+			boxUrl: '/public/box-smite.png',
+			bannerUrl: '/public/banner-smite.png',
+			avatarUrl: '/public/avatar-smite.png'
+		}
+	],
+	[
+		'heartstone',
+		{
+			slug: 'heartstone',
+			name: 'HeartStone',
+			boxUrl: '/public/box-heartstone.png',
+			bannerUrl: '/public/banner-heartstone.png',
+			avatarUrl: '/public/avatar-heartstone.png'
+		}
+	],
+	[
+		'heroes',
+		{
+			slug: 'heroes',
+			name: 'Heroes of the Storm',
+			boxUrl: '/public/box-heroes.png',
+			bannerUrl: '/public/banner-heroes.png',
+			avatarUrl: '/public/avatar-heroes.png'
+		}
+	],
+	[
+		'startcraft',
+		{
+			slug: 'startcraft',
+			name: 'StartCraft',
+			boxUrl: '/public/box-startcraft.png',
+			bannerUrl: '/public/banner-startcraft.png',
+			avatarUrl: '/public/avatar-startcraft.png'
+		}
+	],
+	[
+		'worldoftanks',
+		{
+			slug: 'worldoftanks',
+			name: 'World of Tanks',
+			boxUrl: '/public/box-worldoftanks.png',
+			bannerUrl: '/public/banner-worldoftanks.png',
+			avatarUrl: '/public/avatar-worldoftanks.png'
+		}
+	]
+]);
+
+export const getGame = (slug: string) => {
+	return (
+		games.get(slug) ?? {
+			slug: 'all',
+			name: 'All Games',
+			boxUrl: '/public/box-all.png',
+			bannerUrl: '/public/banner-all.png',
+			avatarUrl: '/public/avatar-all.png'
+		}
+	);
+};

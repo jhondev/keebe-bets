@@ -1,8 +1,8 @@
 <script lang="ts">
+	import Events from '$lib/components/events/events.svelte';
+
 	export let data;
-	const { game } = data;
+	const { gameEvts } = data;
 </script>
 
-<div>
-	<h1>{game.name}</h1>
-</div>
+<Events data={gameEvts} />
