@@ -11,25 +11,23 @@
 
 <script lang="ts">
 	export let data: MatchEvent;
-	import {dataGame} from '$lib/store/gameInfoStore';
+	import { dataGame } from '$lib/store/gameInfoStore';
 	const { game, event } = data;
 
-	const viewGameStatistics = (game: number) => dataGame.set(game)
-	
-
+	const viewGameStatistics = (game: number) => dataGame.set(game);
 </script>
 
-<div class="flex flex-row gap-1 relative" >
+<div class="flex flex-row gap-1 relative">
 	<a class="logo-item w-1/12" href={`/games/${game.slug}`}>
 		<Avatar src={game.avatarUrl} padding="" rounded="rounded-l-md" />
 	</a>
-	<a class="logo-item px-1 py-0 w-0 w-2/12" href="#top">
+	<a class="logo-item px-1 py-0 w-2/12" href="#top">
 		<span>{event.name}</span>
 	</a>
 	<a class="logo-item px-1 py-0 w-3/12" href="/">
 		<span>{event.teamA.name}</span>
 	</a>
-	<a class="logo-item py-0 w-0 w-2/12" href="/">
+	<a class="logo-item py-0 w-2/12" href="/">
 		<span>{event.teamA.points}</span>
 		<span>:</span>
 		<span>{event.teamB.points}</span>
