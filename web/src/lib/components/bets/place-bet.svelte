@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import Dialog from '../ui/dialog/dialog.svelte';
+	import Video from '../ui/video.svelte';
+	import ElementBet from './element-bet.svelte';
 </script>
 
-<Button>Place Bet</Button>
+<Video videoId="fwAKNfEKV50" />
+<hr>
+
+<ElementBet />
