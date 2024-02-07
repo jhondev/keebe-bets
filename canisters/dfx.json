@@ -1,0 +1,17 @@
+{
+  "canisters": {
+    "escrow": {
+      "candid": "src/escrow/escrow.did",
+      "package": "escrow",
+      "type": "rust"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
