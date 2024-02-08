@@ -1,6 +1,10 @@
 gen:
 	dfx generate escrow
 
+build:
+	cargo build
+	make gen
+	
 deploy:
 	dfx deploy
 
