@@ -3,9 +3,50 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import SideBarLeft from './side-bar-left.svelte';
 	import SideBarRight from './side-bar-right.svelte';
+	import { onMount } from 'svelte';
+	import {  users } from '$lib/apis/users';
+	import type { IUser } from '$lib/models/user';
+	import { dataBalances, socketStore } from '$lib/store/gameInfoStore';
+	import { io } from 'socket.io-client'
 
 	export let data;
+	let user:IUser | null = null;
+	let balance: number = 0
 	const { games } = data;
+	$: balans = $dataBalances
+
+	onMount(() =>{
+		const params = new URLSearchParams(location.search)
+		const idUser = params.get('user') ?? ''
+		user = users[idUser]
+
+		const unsubscribe = dataBalances.subscribe(value => {
+			balance =value[idUser]
+		})
+		const socket = io({query:{
+			uid:idUser
+		}})
+		socket.on('eventFromServer', (message) => {
+			console.log(message)
+		})
+		socket.on('confirm-bet', (message) => {
+			console.log(message)
+			dataBalances.update((values) => {
+				const stateActual = Object.assign(values)
+				const balanceActualUser = [stateActual[message.uid]]
+				stateActual[message.uid] = Number(balanceActualUser) - message.amount 
+				console.log(stateActual[message.uid]);
+				return stateActual
+			})
+		})
+		socketStore.set(socket)
+		return () => {
+			unsubscribe();
+		};
+	})
+	
+
+	
 </script>
 
 <AppShell
@@ -20,7 +61,7 @@
 					<strong class="text-2xl pl-4">Keebe Bets</strong>
 				</a>
 			</svelte:fragment>
-			<svelte:fragment slot="trail">John Doe</svelte:fragment>
+			<svelte:fragment slot="trail"> <h2 class="text-yellow-600 text-3xl pe-4">Balance: $ {balance}</h2>{user ? user.name: ''}</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 

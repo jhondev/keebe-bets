@@ -15,7 +15,7 @@
 					<h1>$ {amount}</h1>
 				</div>
 				<div class="w-1/3">
-					<DialogBet />
+					<DialogBet propousalBet={{uid:user.id,amount}} />
 				</div>
 			</li>
 		{/each}

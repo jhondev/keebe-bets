@@ -1,4 +1,5 @@
 import type { PropousalBet } from "$lib/models/interfaces"
+import { users } from "../users"
 
 export type Game = {
 	slug: string;
@@ -116,12 +117,12 @@ export const getGame = (slug: string) => {
 // // Ejemplo de un listado de apuestas
 export const listPropousalBet: PropousalBet[] = [
   {
-    user: {id: 1,name: "John",lastname: "Doe",email: "john.doe@example.com",phone: "123456789", user:"johndoe",password: "secretpassword",imageProfile: "/images/profile.png"},
+    user: Object.values(users)[0],
     amount: 50,
   },
   {
-    user: {id:2, name:"Jane",lastname: "Smith",email: "jane.smith@example.com",phone: "987654321", user:"janesmith",password: "password123", imageProfile:"/images/profile.png"},
-    amount: 50,
+    user: Object.values(users)[1],
+    amount: 120,
   },
   // Agrega más apuestas según sea necesario
 ];
