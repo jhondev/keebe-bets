@@ -1,13 +1,39 @@
-<script>
+<script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
     import { flyAndScale } from '$lib/utils';
 	import { Button } from "../ui/button";
     import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '../ui/input';
+	import { users } from '$lib/apis/users';
+	import { socketStore, userStorage } from '$lib/store/gameInfoStore';
+	import type { Socket } from 'socket.io-client';
+	import { onMount } from 'svelte';
 
     let dialogOpen = false;
+	$: idUser = $userStorage
+	let amountProposal = 0
+	let socketUser: Socket 
+	onMount(() => {
+		console.log(userStorage);
 
-    const makeProposal = () =>{}
+		const unsub1 = socketStore.subscribe((value: Socket) => {
+      		socketUser = value;
+		});
+
+		return unsub1
+	})
+
+    const makeProposal = () => {
+		console.log(amountProposal);
+		const user = users[String(idUser)]
+		console.log(user);
+		const proposal = {
+			user,
+			amount: amountProposal,
+			status: false
+		}
+		socketUser.emit('proposal-bet',proposal)
+	}
 </script>
 
 
@@ -31,25 +57,10 @@
 			<div class="flex flex-col items-start gap-1 pb-11 pt-7 items-center">
 				<h1 class="text-yellow-500 text-3xl mb-5">Proposal amount</h1>
 				<div class="relative w-full ">
-                    <Input type="number" placeholder="Amount" class="w-full text-center mb-3 text-3xl" value="0" />
+                    <Input type="number" bind:value={amountProposal} placeholder="Amount" class="w-full text-center mb-3 text-3xl"  />
                     <Button on:click={makeProposal} class="text-white py-2 px-4 mb-2 rounded w-full text-2xl h-auto" >Make Proposal</Button>
 				</div>
-				
-				<!-- <div class="flex w-full justify-end">
-					<Dialog.Close
-						class="inline-flex h-input items-center justify-center rounded-input bg-dark px-[50px] text-[15px] font-semibold text-background shadow-mini hover:bg-dark/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dark focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-98"
-					>
-						Save
-					</Dialog.Close>
-				</div>
-				<Dialog.Close
-					class="absolute right-5 top-5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-98"
-				>
-					<div>
-						<span class="sr-only">Close</span>
-					</div>
-				</Dialog.Close> -->
-			</div></Dialog.Content
-		>
+			</div>
+		</Dialog.Content>
 	</Dialog.Portal>
 </Dialog.Root>

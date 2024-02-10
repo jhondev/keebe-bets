@@ -17,9 +17,11 @@ const webSocketServer = {
 			console.log(socket.handshake.query); 
 			socket.emit('eventFromServer', 'Hello, World 👋')
 			socket.on('accept-bet',(value) => {
-				console.log(value);
 				const socketMessage = listSocketsConnected.find(socket => String(socket.handshake.query.uid) === String(value.uid))
 				socketMessage?.emit('confirm-bet',value)
+			})
+			socket.on('proposal-bet',(value) => {
+				io.emit('proposal-bet',value)
 			})
 			socket.on('disconnect',() => {
 				listSocketsConnected = [...listSocketsConnected.filter(sck => sck !==socket)]

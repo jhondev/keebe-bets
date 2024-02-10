@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import {  users } from '$lib/apis/users';
 	import type { IUser } from '$lib/models/user';
-	import { dataBalances, socketStore } from '$lib/store/gameInfoStore';
+	import { dataBalances, propousalBetsStore, socketStore, userStorage } from '$lib/store/gameInfoStore';
 	import { io } from 'socket.io-client'
 
 	export let data;
@@ -19,6 +19,7 @@
 		const params = new URLSearchParams(location.search)
 		const idUser = params.get('user') ?? ''
 		user = users[idUser]
+		userStorage.set(idUser)
 
 		const unsubscribe = dataBalances.subscribe(value => {
 			balance =value[idUser]
@@ -30,12 +31,17 @@
 			console.log(message)
 		})
 		socket.on('confirm-bet', (message) => {
-			console.log(message)
 			dataBalances.update((values) => {
 				const stateActual = Object.assign(values)
 				const balanceActualUser = [stateActual[message.uid]]
 				stateActual[message.uid] = Number(balanceActualUser) - message.amount 
-				console.log(stateActual[message.uid]);
+				return stateActual
+			})
+		})
+		socket.on('proposal-bet', (proposal) => {
+			propousalBetsStore.update(values => {
+				const stateActual = [...values]
+				stateActual.push(proposal)
 				return stateActual
 			})
 		})

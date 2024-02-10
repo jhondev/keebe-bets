@@ -35,7 +35,7 @@
 
 	const acceptBet = () => {
 		socketUser.emit('accept-bet', propousalBet);
-		// dataBalances.update(currentBalances =>({...currentBalances,[user.id ? '']:}))
+		dialogOpen = false
 	}
 
 </script>
