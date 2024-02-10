@@ -1,0 +1,17 @@
+type RejectionCode = variant {
+  NoError;
+  CanisterError;
+  SysTransient;
+  DestinationInvalid;
+  Unknown;
+  SysFatal;
+  CanisterReject;
+};
+type Result = variant { Ok : nat; Err : record { RejectionCode; text } };
+service : {
+  deposit_icp : () -> (Result);
+  get_caller_balance : () -> (Result);
+  get_canister_balance : () -> (Result);
+  get_deposit_address : () -> (vec nat8);
+  get_value : () -> (text);
+}
