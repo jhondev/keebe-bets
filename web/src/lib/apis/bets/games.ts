@@ -119,10 +119,12 @@ export const listPropousalBet: PropousalBet[] = [
   {
     user: Object.values(users)[0],
     amount: 50,
+	status: false
   },
   {
     user: Object.values(users)[1],
     amount: 120,
+	status: true
   },
   // Agrega más apuestas según sea necesario
 ];
