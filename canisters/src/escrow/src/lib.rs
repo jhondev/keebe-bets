@@ -1,28 +1,22 @@
-// mod bet;
-// mod bookmaker;
-// mod event;
+mod bet;
+mod bookmaker;
+mod event;
+mod ledger;
 mod utils;
 
 use std::cell::RefCell;
 
-// use bookmaker::BookMaker;
-use candid::{candid_method, CandidType, Nat, Principal};
-use ic_cdk::{caller, query, update};
-use ic_ledger_types::{
-    AccountIdentifier,
-    // BlockIndex, Memo, Subaccount, Tokens, DEFAULT_SUBACCOUNT,
-    MAINNET_LEDGER_CANISTER_ID,
-};
+use bookmaker::BookMaker;
+use candid::{candid_method, CandidType, Nat};
+use ic_cdk::{api::call::CallResult, caller, query, update};
+use ic_ledger_types::{AccountIdentifier, DEFAULT_SUBACCOUNT};
 // use serde::{Deserialize, Serialize};
 use utils::principal_to_subaccount;
-
-const ICP_FEE: u64 = 10_000;
-// const ESCROW_FEE: f64 = 0.05; // 5%
 
 #[derive(Default)]
 pub struct State {
     // owner: Option<Principal>,
-    // _maker: BookMaker,
+    _maker: BookMaker,
 }
 
 thread_local! {
@@ -37,24 +31,41 @@ pub enum DepositErr {
 
 #[update]
 #[candid_method(update)]
-async fn deposit_icp(caller: Principal) -> Result<Nat, DepositErr> {
+async fn deposit_icp() -> CallResult<Nat> {
     let canister_id = ic_cdk::api::id();
-    // let ledger_canister_id = STATE
-    //     .with(|s| s.borrow().ledger_id)
-    //     .unwrap_or(MAINNET_LEDGER_CANISTER_ID);
+    let caller = caller();
 
-    let account = AccountIdentifier::new(&canister_id, &principal_to_subaccount(&caller));
+    let balance = ledger::get_balance(&canister_id, &principal_to_subaccount(&caller)).await?;
+    ledger::transfer_icp(
+        Some(principal_to_subaccount(&caller)),
+        AccountIdentifier::new(&canister_id, &DEFAULT_SUBACCOUNT),
+        balance,
+    )
+    .await
+}
 
-    let balance_args = ic_ledger_types::AccountBalanceArgs { account };
-    let balance = ic_ledger_types::account_balance(MAINNET_LEDGER_CANISTER_ID, balance_args)
-        .await
-        .map_err(|_| DepositErr::TransferFailure)?;
+#[update]
+#[candid_method]
+pub async fn get_canister_balance() -> CallResult<Nat> {
+    let canister_id = ic_cdk::api::id();
+    let balance = ledger::get_balance(&canister_id, &DEFAULT_SUBACCOUNT).await?;
+    Ok(balance.e8s().into())
+}
 
-    if balance.e8s() < ICP_FEE {
-        return Err(DepositErr::BalanceLow);
-    }
+#[update]
+#[candid_method]
+pub async fn get_caller_balance() -> CallResult<Nat> {
+    let canister_id = ic_cdk::api::id();
+    let balance = ledger::get_balance(&canister_id, &principal_to_subaccount(&caller())).await?;
+    Ok(balance.e8s().into())
+}
 
-    Ok((balance.e8s() - ICP_FEE).into())
+#[query]
+#[candid_method]
+pub fn get_value() -> String {
+    // let canister_id = ic_cdk::api::id();
+    let canister_id = caller();
+    canister_id.to_text() + " | 1"
 }
 
 #[query]
@@ -87,7 +98,7 @@ pub fn get_deposit_address() -> AccountIdentifier {
 //     let to_subaccount = args.to_subaccount.unwrap_or(DEFAULT_SUBACCOUNT);
 //     let transfer_args = STATE.with(|s| {
 //         let s = s.borrow();
-//         ic_ledger_types::TransferArgs {
+//         TransferArgs {
 //             memo: Memo(0),
 //             amount: args.amount,
 //             fee: Tokens::from_e8s(ICP_FEE),
@@ -96,8 +107,11 @@ pub fn get_deposit_address() -> AccountIdentifier {
 //             created_at_time: None,
 //         }
 //     });
-//     ic_ledger_types::transfer(ledger_id, transfer_args)
+//     transfer(ledger_id, transfer_args)
 //         .await
 //         .map_err(|e| format!("failed to call ledger: {:?}", e))?
 //         .map_err(|e| format!("ledger transfer error {:?}", e))
 // }
+
+// Create a get_candid_pointer method so that dfx can execute it to extract candid definition.
+ic_cdk::export_candid!();
