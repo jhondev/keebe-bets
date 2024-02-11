@@ -4,6 +4,29 @@
       "candid": "src/escrow/escrow.did",
       "package": "escrow",
       "type": "rust"
+    },
+    "ledger": {
+      "id": "ryjl3-tyaaa-aaaaa-aaaba-cai",
+      "type": "custom",
+      "candid": "https://raw.githubusercontent.com/dfinity/ic/044cfd5147fc97d7e5a214966941b6580c325d72/rs/rosetta-api/icp_ledger/ledger.did",
+      "wasm": "https://download.dfinity.systems/ic/044cfd5147fc97d7e5a214966941b6580c325d72/canisters/ledger-canister.wasm.gz",
+      "remote": {
+        "id": {
+          "ic": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        }
+      }
+    },
+    "identity": {
+      "id": "rdmx6-jaaaa-aaaaa-aaadq-cai",
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "frontend": {}
     }
   },
   "defaults": {

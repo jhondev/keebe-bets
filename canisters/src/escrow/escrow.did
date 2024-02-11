@@ -9,9 +9,10 @@ type RejectionCode = variant {
 };
 type Result = variant { Ok : nat; Err : record { RejectionCode; text } };
 service : {
-  deposit_icp : () -> (Result);
+  getPot : (nat64) -> (Result);
   get_caller_balance : () -> (Result);
   get_canister_balance : () -> (Result);
-  get_deposit_address : () -> (vec nat8);
+  get_deposit_address : (nat64) -> (vec nat8);
   get_value : () -> (text);
+  place_bet : (nat64, nat64) -> (Result);
 }
