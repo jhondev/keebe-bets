@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_CANISTER_ID_IDENTITY, PUBLIC_DFX_NETWORK } from '$env/static/public';
 	import { createEscrowActor, createLedgerActor } from '$lib/canisters/actors';
-	import { auth } from '$lib/store/auth';
+	import { app } from '$lib/store/auth';
 	import { AuthClient } from '@dfinity/auth-client';
 	import { onMount } from 'svelte';
 
@@ -9,14 +9,14 @@
 
 	const handleAuth = async () => {
 		const identity = client.getIdentity();
-		auth.update(() => ({
+		app.update(() => ({
 			loggedIn: true,
 			principal: identity.getPrincipal(),
 			escrow: createEscrowActor({ agentOptions: { identity } }),
 			ledger: createLedgerActor({ agentOptions: { identity } }),
 			logout: async () => {
 				await client.logout();
-				auth.update((a) => ({ ...a, loggedIn: false, principal: undefined, escrow: undefined }));
+				app.update((a) => ({ ...a, loggedIn: false, principal: undefined, escrow: undefined }));
 			}
 		}));
 	};
@@ -40,7 +40,7 @@
 	}
 </script>
 
-{#if $auth.loggedIn}
+{#if $app.loggedIn}
 	<slot />
 {:else}
 	<button class="btn variant-filled-primary" on:click={login}>Login</button>

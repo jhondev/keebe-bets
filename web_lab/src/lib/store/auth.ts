@@ -12,7 +12,7 @@ export type Appl = {
 	logout: () => Promise<void>;
 };
 
-export const auth = writable<Appl>({
+export const app = writable<Appl>({
 	loggedIn: false,
 	principal: undefined,
 	escrow: undefined,

@@ -7,12 +7,21 @@ type RejectionCode = variant {
   SysFatal;
   CanisterReject;
 };
-type Result = variant { Ok : nat; Err : record { RejectionCode; text } };
+type Result = variant { Ok; Err : record { RejectionCode; text } };
+type Result_1 = variant { Ok : nat; Err : record { RejectionCode; text } };
+type Result_2 = variant {
+  Ok : vec principal;
+  Err : record { RejectionCode; text };
+};
 service : {
-  getPot : (nat64) -> (Result);
-  get_caller_balance : () -> (Result);
-  get_canister_balance : () -> (Result);
-  get_deposit_address : (nat64) -> (vec nat8);
-  get_value : () -> (text);
-  place_bet : (nat64, nat64) -> (Result);
+  acceptBet : (nat64, nat64, text) -> (Result);
+  closeBets : (nat64) -> (Result);
+  distributePrize : (nat64, nat64) -> (Result);
+  getBetBalance : (nat64) -> (Result_1);
+  getBetWinners : (nat64, nat64) -> (Result_2);
+  getCanisterBalance : () -> (Result_1);
+  getDepositAddress : (nat64) -> (vec nat8);
+  getPot : (nat64, nat64) -> (Result_1);
+  placeBet : (nat64, nat64, text, nat64) -> (Result);
+  settleBets : (nat64, text) -> (Result);
 }

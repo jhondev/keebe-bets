@@ -1,15 +1,17 @@
 use candid::{Nat, Principal};
-use ic_cdk::{
-    api::call::{CallResult, RejectionCode},
-    caller,
-};
+use ic_cdk::{api::call::CallResult, caller};
 use ic_ledger_types::{
     account_balance, AccountBalanceArgs, AccountIdentifier, Memo, Subaccount, Tokens,
     MAINNET_LEDGER_CANISTER_ID,
 };
 
+use crate::{
+    bet::BetId,
+    errors::{error, reject},
+    utils::Convert,
+};
+
 const ICP_FEE: u64 = 10_000;
-// const ESCROW_FEE: f64 = 0.05; // 5%
 
 pub async fn get_balance(owner: &Principal, subaccount: &Subaccount) -> CallResult<Tokens> {
     let account = AccountIdentifier::new(owner, subaccount);
@@ -17,23 +19,26 @@ pub async fn get_balance(owner: &Principal, subaccount: &Subaccount) -> CallResu
     account_balance(MAINNET_LEDGER_CANISTER_ID, balance_args).await
 }
 
+pub async fn get_bet_balance(bet_id: BetId) -> CallResult<Nat> {
+    let canister_id = ic_cdk::api::id();
+    let bet_subaccount = Subaccount::from_u64(&bet_id);
+    let balance = get_balance(&canister_id, &bet_subaccount).await?;
+    Ok(balance.e8s().into())
+}
+
 pub async fn transfer_icp(
     from_subaccount: &Subaccount,
     to: AccountIdentifier,
     amount: Tokens,
 ) -> CallResult<Nat> {
-    // TODO: add escrow fee
     let fee = Tokens::from_e8s(ICP_FEE);
     let total = amount + fee;
     let balance = get_balance(&caller(), from_subaccount).await?;
     if balance < total {
-        return Err((
-            RejectionCode::CanisterError,
-            format!(
-                "Insufficient balance to transfer. Current balance {} ICP",
-                balance
-            ),
-        ));
+        reject(format!(
+            "Insufficient balance to transfer. Current balance {} ICP",
+            balance
+        ))?;
     }
     let transfer_args = ic_ledger_types::TransferArgs {
         memo: Memo(0),
@@ -55,14 +60,8 @@ pub async fn transfer_icp(
                 );
                 Ok(a.into())
             }
-            Err(err) => Err((
-                RejectionCode::CanisterError,
-                format!("LedgerError: {}", err),
-            )),
+            Err(err) => error(format!("LedgerError: {}", err)),
         },
-        Err(err) => Err((
-            RejectionCode::CanisterError,
-            format!("LedgerCall: {}", err.1),
-        )),
+        Err(err) => error(format!("LedgerCall: {}", err.1)),
     }
 }
