@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package bets.v1;
-
-option go_package = "github.com/jhondev/keebe-bets/proto/gen/v1";
-
-service Service {}
