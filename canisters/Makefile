@@ -3,16 +3,17 @@ setup:
 	cargo install candid-extractor
 
 gen:
-	dfx generate escrow
+	dfx generate
+	cp -rf src/declarations ../web_lab/src/lib/canisters/.
 
 build:
 	cargo build
-	candid-extractor target/wasm32-unknown-unknown/debug/escrow.wasm > src/escrow/escrow.did
-	make gen
+	candid-extractor target/wasm32-unknown-unknown/debug/escrow.wasm > src/escrow/escrow.did	
 	
 deploy:
 	make build
 	dfx deploy
+	make gen
 
 .PHONY: deploy prev
 deploy-play:

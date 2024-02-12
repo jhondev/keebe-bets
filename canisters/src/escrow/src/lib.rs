@@ -1,117 +1,154 @@
 mod bet;
 mod bookmaker;
+mod errors;
 mod event;
 mod ledger;
 mod utils;
 
 use std::cell::RefCell;
 
+use bet::{BetId, BetStatus};
 use bookmaker::BookMaker;
-use candid::{candid_method, CandidType, Nat};
-use ic_cdk::{api::call::CallResult, caller, query, update};
-use ic_ledger_types::{AccountIdentifier, DEFAULT_SUBACCOUNT};
-// use serde::{Deserialize, Serialize};
-use utils::principal_to_subaccount;
+use candid::{candid_method, Nat, Principal};
+use errors::reject;
+use event::{EventErr, EventId};
+use ic_cdk::{api::call::CallResult, query, update};
+use ic_ledger_types::{AccountIdentifier, Subaccount, Tokens, DEFAULT_SUBACCOUNT};
+use utils::{val_auth, Convert};
 
 #[derive(Default)]
 pub struct State {
     // owner: Option<Principal>,
-    _maker: BookMaker,
+    maker: BookMaker,
 }
 
 thread_local! {
     static STATE: RefCell<State> = RefCell::new(State::default());
 }
 
-#[derive(CandidType)]
-pub enum DepositErr {
-    BalanceLow,
-    TransferFailure,
+#[update(name = "placeBet")]
+#[candid_method(rename = "placeBet")]
+pub async fn place_bet(
+    event_id: EventId,
+    bet_id: BetId,
+    winner: String,
+    amount: u64,
+) -> CallResult<()> {
+    val_auth()?;
+    let balance = ledger::get_bet_balance(bet_id).await?;
+
+    if balance < amount {
+        reject(format!(
+            "Insufficient balance to place bet. Current balance in bet account {} ICP",
+            balance
+        ))?;
+    }
+    STATE.with(|s| {
+        s.borrow_mut()
+            .maker
+            .place_bet(event_id, bet_id, amount, winner)
+    })
 }
 
-#[update]
-#[candid_method(update)]
-async fn deposit_icp() -> CallResult<Nat> {
+#[update(name = "acceptBet")]
+#[candid_method(rename = "acceptBet")]
+pub async fn accept_bet(event_id: EventId, bet_id: BetId, winner: String) -> CallResult<()> {
+    val_auth()?;
+    let balance = ledger::get_bet_balance(bet_id).await?;
+    STATE.with(|s| {
+        let state = s.borrow();
+        let bet = state.maker.get_bet(event_id, bet_id)?;
+        let req = bet.amount * (bet.participants.len() + 1) as u64;
+        if balance < req {
+            reject(
+                format!("Insufficient balance to accept bet. Current balance in bet account {} ICP and should be at least {} ICP",
+                balance, req))?;
+        }
+        Ok(())
+    })?;
+
+    STATE.with(|s| s.borrow_mut().maker.accept_bet(event_id, bet_id, winner))
+}
+
+#[update(name = "closeBets")]
+#[candid_method(rename = "closeBets")]
+pub async fn close_bets(event_id: EventId) -> CallResult<()> {
+    val_auth()?; // TODO: just the owner can close the bets
+    STATE.with(|s| s.borrow_mut().maker.close_bets(event_id))
+}
+
+#[update(name = "settleBets")]
+#[candid_method(rename = "settleBets")]
+pub async fn settle_bets(event_id: EventId, winner: String) -> CallResult<()> {
+    val_auth()?; // TODO: just the owner can settle the bets
+    STATE.with(|s| s.borrow_mut().maker.settle_bets(event_id, &winner))
+}
+
+#[query(name = "distributePrize")]
+#[candid_method(rename = "distributePrize")]
+pub async fn distribute_prize(event_id: EventId, bet_id: BetId) -> CallResult<()> {
+    val_auth()?; // TODO: just the owner can distribute the prize
+    let winners = STATE.with(|s| s.borrow().maker.get_bet_winners(event_id, bet_id))?;
+    let prize = STATE.with(|s| {
+        let state = s.borrow();
+        let bet = state.maker.get_bet(event_id, bet_id)?;
+        if bet.status != BetStatus::Settled {
+            reject(EventErr::BetNotSettled(bet.status).to_string())?;
+        }
+        Ok(Tokens::from_e8s(bet.prize.unwrap()))
+    })?;
+    for winner in winners {
+        ledger::transfer_icp(
+            &Subaccount::from_u64(&bet_id),
+            AccountIdentifier::new(&winner, &DEFAULT_SUBACCOUNT),
+            prize,
+        )
+        .await?;
+    }
+    Ok(())
+}
+
+#[update(name = "getBetBalance")]
+#[candid_method(rename = "getBetBalance")]
+pub async fn get_bet_balance(bet_id: BetId) -> CallResult<Nat> {
     let canister_id = ic_cdk::api::id();
-    let caller = caller();
-
-    let balance = ledger::get_balance(&canister_id, &principal_to_subaccount(&caller)).await?;
-    ledger::transfer_icp(
-        Some(principal_to_subaccount(&caller)),
-        AccountIdentifier::new(&canister_id, &DEFAULT_SUBACCOUNT),
-        balance,
-    )
-    .await
+    let bet_subaccount = Subaccount::from_u64(&bet_id);
+    let balance = ledger::get_balance(&canister_id, &bet_subaccount).await?;
+    Ok(balance.e8s().into())
 }
 
-#[update]
-#[candid_method]
+#[update(name = "getPot")]
+#[candid_method(rename = "getPot")]
+pub async fn get_pot(event_id: EventId, bet_id: BetId) -> CallResult<Nat> {
+    STATE.with(|s| {
+        let state = s.borrow();
+        let bet = state.maker.get_bet(event_id, bet_id)?;
+        Ok(bet.pot.into())
+    })
+}
+
+#[update(name = "getCanisterBalance")]
+#[candid_method(rename = "getCanisterBalance")]
 pub async fn get_canister_balance() -> CallResult<Nat> {
     let canister_id = ic_cdk::api::id();
     let balance = ledger::get_balance(&canister_id, &DEFAULT_SUBACCOUNT).await?;
     Ok(balance.e8s().into())
 }
 
-#[update]
-#[candid_method]
-pub async fn get_caller_balance() -> CallResult<Nat> {
+#[query(name = "getDepositAddress")]
+#[candid_method(rename = "getDepositAddress")]
+pub fn get_deposit_address(bet_id: BetId) -> AccountIdentifier {
     let canister_id = ic_cdk::api::id();
-    let balance = ledger::get_balance(&canister_id, &principal_to_subaccount(&caller())).await?;
-    Ok(balance.e8s().into())
-}
-
-#[query]
-#[candid_method]
-pub fn get_value() -> String {
-    // let canister_id = ic_cdk::api::id();
-    let canister_id = caller();
-    canister_id.to_text() + " | 1"
-}
-
-#[query]
-#[candid_method]
-pub fn get_deposit_address() -> AccountIdentifier {
-    let canister_id = ic_cdk::api::id();
-    let subaccount = principal_to_subaccount(&caller());
-
+    let subaccount = Subaccount::from_u64(&bet_id);
     AccountIdentifier::new(&canister_id, &subaccount)
 }
 
-// #[derive(CandidType, Serialize, Deserialize, Clone, Debug, Hash)]
-// pub struct TransferArgs {
-//     amount: Tokens,
-//     to_principal: Principal,
-//     to_subaccount: Option<Subaccount>,
-// }
-// #[update]
-// #[candid_method(update)]
-// async fn transfer(args: TransferArgs) -> Result<BlockIndex, String> {
-//     ic_cdk::println!(
-//         "Transferring {} tokens to principal {} subaccount {:?}",
-//         &args.amount,
-//         &args.to_principal,
-//         &args.to_subaccount
-//     );
-//     let ledger_id = STATE
-//         .with(|s| s.borrow().ledger_id)
-//         .unwrap_or(MAINNET_LEDGER_CANISTER_ID);
-//     let to_subaccount = args.to_subaccount.unwrap_or(DEFAULT_SUBACCOUNT);
-//     let transfer_args = STATE.with(|s| {
-//         let s = s.borrow();
-//         TransferArgs {
-//             memo: Memo(0),
-//             amount: args.amount,
-//             fee: Tokens::from_e8s(ICP_FEE),
-//             from_subaccount: s.subaccount,
-//             to: AccountIdentifier::new(&args.to_principal, &to_subaccount),
-//             created_at_time: None,
-//         }
-//     });
-//     transfer(ledger_id, transfer_args)
-//         .await
-//         .map_err(|e| format!("failed to call ledger: {:?}", e))?
-//         .map_err(|e| format!("ledger transfer error {:?}", e))
-// }
+#[query(name = "getBetWinners")]
+#[candid_method(rename = "getBetWinners")]
+pub fn get_bet_winners(event_id: EventId, bet_id: BetId) -> CallResult<Vec<Principal>> {
+    let winners = STATE.with(|s| s.borrow().maker.get_bet_winners(event_id, bet_id))?;
+    Ok(winners)
+}
 
 // Create a get_candid_pointer method so that dfx can execute it to extract candid definition.
 ic_cdk::export_candid!();

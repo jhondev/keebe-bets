@@ -4,14 +4,14 @@ use candid::{CandidType, Principal};
 
 use crate::event::EventId;
 
-pub type BetId = u32;
+pub type BetId = u64;
 pub type ParticipantId = Principal;
 pub type Bets = HashMap<BetId, Bet>;
 
-#[derive(CandidType, PartialEq, Copy, Clone)]
+#[derive(CandidType, PartialEq, Copy, Clone, Debug)]
 pub enum BetStatus {
     Open,
-    Cancelled,
+    // Cancelled,
     Closed,
     Settled,
 }
@@ -22,7 +22,7 @@ pub struct ParticipantBet {
     pub winner: String,
 }
 
-#[derive(CandidType)]
+#[derive(CandidType, Clone)]
 pub struct Bet {
     pub id: BetId,
     pub event_id: EventId,
@@ -31,19 +31,20 @@ pub struct Bet {
     pub pot: u64,
     pub participants: Vec<ParticipantBet>,
     pub status: BetStatus,
+    pub prize: Option<u64>,
 }
 
 impl Bet {
-    pub fn calc_prize(&self, winner: &str) -> (u64, Vec<&ParticipantId>) {
+    pub fn set_prize(&mut self, winner: &str) {
         let mut prize = 0;
-        let mut winners = Vec::<&ParticipantId>::new();
+        let mut winners = 0;
         for participant in &self.participants {
             if participant.winner == winner {
                 prize += self.amount;
-                winners.push(&participant.id);
+                winners += 1;
             }
         }
-        prize /= winners.len() as u64;
-        (prize, winners)
+        prize /= winners;
+        self.prize = Some(prize);
     }
 }
