@@ -1,12 +1,41 @@
 <script lang="ts">
-	import AuthButton from '../auth/auth-button.svelte';
-	import Video from '../ui/video.svelte';
-	import ElementBet from './element-bet.svelte';
+	import DialogBet from './dialog-bet.svelte';
+	import { propousalBetsStore } from '$lib/store/gameInfoStore';
+	import ProposeBet from './propose-bet.svelte';
+	$: betAccepted = $propousalBetsStore.filter((bet) => bet.status === true);
+	$: betPending = $propousalBetsStore.filter((bet) => bet.status === false);
 </script>
 
-<Video videoId="fwAKNfEKV50" />
-<hr />
+<ProposeBet />
+<div class="max-w-md mx-auto p-3 border m-4 rounded bg-gray-900">
+	<ul>
+		{#each betAccepted as { user, amount }}
+			<li class="flex">
+				<div class="w-2/5">
+					<h1>Accepted: $ {amount}</h1>
+				</div>
+				<div class="w-1/5">vs</div>
+				<div class="w-2/5"><h1>{user.name} {user.lastname}</h1></div>
+			</li>
+		{/each}
+	</ul>
+</div>
 
-<AuthButton>
-	<ElementBet />
-</AuthButton>
+<div class="max-w-md mx-auto p-4">
+	<ul>
+		{#each betPending as { user, amount }}
+			<li class="flex flex-row items-center mb-4">
+				<div class="w-1/4">
+					<img class="w-10 h-10 rounded-full mr-2" src={user.imageProfile} alt="Foto de usuario" />
+				</div>
+				<div class="w-1/2"><p class="font-bold">{`${user.name} ${user.lastname}`}</p></div>
+				<div class="w-1/3">
+					<h1>$ {amount}</h1>
+				</div>
+				<div class="w-1/3">
+					<DialogBet propousalBet={{ uid: user.id, amount }} />
+				</div>
+			</li>
+		{/each}
+	</ul>
+</div>

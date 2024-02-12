@@ -6,6 +6,8 @@
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 
+	export let containerClass: string = '';
+
 	let client: AuthClient;
 
 	const handleAuth = async () => {
@@ -44,5 +46,7 @@
 {#if $app.loggedIn}
 	<slot />
 {:else}
-	<Button on:click={login}>Login</Button>
+	<div class={containerClass}>
+		<Button class={$$props.class} on:click={login}>Login</Button>
+	</div>
 {/if}
