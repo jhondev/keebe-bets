@@ -4,7 +4,7 @@ setup:
 
 gen:
 	dfx generate
-	cp -rf src/declarations ../web_lab/src/lib/canisters/.
+	cp -rf src/declarations ../web/src/lib/canisters/.
 
 build:
 	cargo build
@@ -15,7 +15,6 @@ deploy:
 	dfx deploy
 	make gen
 
-.PHONY: deploy prev
 deploy-play:
 	make build
 	dfx deploy --playground

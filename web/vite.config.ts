@@ -1,37 +1,37 @@
 import { purgeCss } from 'vite-plugin-tailwind-purgecss';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type ViteDevServer } from 'vite';
-import { Server, Socket } from 'socket.io'
+import { Server, Socket } from 'socket.io';
 
 const webSocketServer = {
 	name: 'webSocketServer',
 	configureServer(server: ViteDevServer) {
-		if (!server.httpServer) return
+		if (!server.httpServer) return;
 
-		let listSocketsConnected: Socket[] = []
+		let listSocketsConnected: Socket[] = [];
 
-		const io = new Server(server.httpServer)
+		const io = new Server(server.httpServer);
 
 		io.on('connection', (socket) => {
-			listSocketsConnected.push(socket)
-			console.log(socket.handshake.query); 
-			socket.emit('eventFromServer', 'Hello, World 👋')
-			socket.on('accept-bet',(value) => {
-				const socketMessage = listSocketsConnected.find(socket => String(socket.handshake.query.uid) === String(value.uid))
-				socketMessage?.emit('confirm-bet',value)
-			})
-			socket.on('proposal-bet',(value) => {
-				io.emit('proposal-bet',value)
-			})
-			socket.on('disconnect',() => {
-				listSocketsConnected = [...listSocketsConnected.filter(sck => sck !==socket)]
-			})
-		})
+			listSocketsConnected.push(socket);
+			console.log(socket.handshake.query);
+			socket.emit('eventFromServer', 'Hello, World 👋');
+			socket.on('accept-bet', (value) => {
+				const socketMessage = listSocketsConnected.find(
+					(socket) => String(socket.handshake.query.uid) === String(value.uid)
+				);
+				socketMessage?.emit('confirm-bet', value);
+			});
+			socket.on('proposal-bet', (value) => {
+				io.emit('proposal-bet', value);
+			});
+			socket.on('disconnect', () => {
+				listSocketsConnected = [...listSocketsConnected.filter((sck) => sck !== socket)];
+			});
+		});
 	}
-}
+};
 
 export default defineConfig({
-	server:{port:3000},
-	preview:{port:3000},
-	plugins: [sveltekit(), purgeCss(),webSocketServer]
+	plugins: [sveltekit(), purgeCss(), webSocketServer]
 });

@@ -4,6 +4,7 @@
 	import { app } from '$lib/store/auth';
 	import { AuthClient } from '@dfinity/auth-client';
 	import { onMount } from 'svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
 
 	let client: AuthClient;
 
@@ -43,5 +44,5 @@
 {#if $app.loggedIn}
 	<slot />
 {:else}
-	<button class="btn variant-filled-primary" on:click={login}>Login</button>
+	<Button on:click={login}>Login</Button>
 {/if}
