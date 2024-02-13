@@ -23,6 +23,7 @@ await db.event.create({
 		pointsA: '0',
 		pointsB: '1',
 		status: 'live',
+		streamUrl: 'https://player.twitch.tv/?channel=one_passingby&parent=localhost',
 		createdAt: now.toDate()
 	}
 });
@@ -37,6 +38,7 @@ await db.event.create({
 		pointsA: '0',
 		pointsB: '0',
 		status: 'live',
+		streamUrl: 'https://player.twitch.tv/?channel=uncorn85&parent=localhost',
 		createdAt: now.toDate()
 	}
 });
@@ -53,6 +55,7 @@ await db.event.create({
 		pointsB: '-',
 		status: 'upcoming',
 		startAt: start1,
+		streamUrl: '/public/next-match-01.jpeg',
 		createdAt: now.toDate()
 	}
 });
@@ -68,6 +71,7 @@ await db.event.create({
 		pointsB: '-',
 		status: 'upcoming',
 		startAt: start1,
+		streamUrl: '/public/next-match-02.jpeg',
 		createdAt: now.toDate()
 	}
 });
@@ -83,6 +87,7 @@ await db.event.create({
 		pointsB: '-',
 		status: 'upcoming',
 		startAt: start2,
+		streamUrl: '/public/next-match-03.jpeg',
 		createdAt: now.toDate()
 	}
 });
@@ -98,6 +103,7 @@ await db.event.create({
 		pointsB: '-',
 		status: 'upcoming',
 		startAt: start2,
+		streamUrl: '/public/next-match-04.jpeg',
 		createdAt: now.toDate()
 	}
 });
@@ -113,6 +119,7 @@ await db.event.create({
 		pointsB: '-',
 		status: 'upcoming',
 		startAt: start2,
+		streamUrl: '/public/next-match-05.jpeg',
 		createdAt: now.toDate()
 	}
 });

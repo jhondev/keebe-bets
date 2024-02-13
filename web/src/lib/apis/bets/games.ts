@@ -37,7 +37,7 @@ export const games: Map<string, Game> = new Map([
 			name: 'Dota2',
 			boxUrl: '/public/box-dota.png',
 			bannerUrl: '/public/banner-dota.png',
-			avatarUrl: '/public/avatar-dota.png'
+			avatarUrl: '/public/avatar-dota2.png'
 		}
 	],
 	[
@@ -98,6 +98,16 @@ export const games: Map<string, Game> = new Map([
 			boxUrl: '/public/box-worldoftanks.png',
 			bannerUrl: '/public/banner-worldoftanks.png',
 			avatarUrl: '/public/avatar-worldoftanks.png'
+		}
+	],
+	[
+		'eafc',
+		{
+			slug: 'eafc',
+			name: 'EA FC',
+			boxUrl: '/public/box-eafc.png',
+			bannerUrl: '/public/banner-eafc.png',
+			avatarUrl: '/public/avatar-eafc.png'
 		}
 	]
 ]);

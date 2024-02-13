@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import type { Game } from '$lib/apis/bets/games';
-	import type { Event } from '.';
+	import type { Event } from '@prisma/client';
 	import { Avatar } from '@skeletonlabs/skeleton';
 
 	export type MatchEvent = {
@@ -10,25 +10,24 @@
 </script>
 
 <script lang="ts">
-	export let data: MatchEvent;
-	import { dataGame } from '$lib/store/gameInfoStore';
 	import dayjs from 'dayjs';
-	const { game, event } = data;
 
-	const viewGameStatistics = (game: number) => dataGame.set(game);
+	export let data: MatchEvent;
+	const { game, event } = data;
 </script>
 
-<div class="flex flex-row gap-1 relative">
-	<a class="w-1/12" href={`/games/${game.slug}`}>
-		<Avatar src={game.avatarUrl} padding="" rounded="rounded-l-md" />
-	</a>
-	<a class="px-1 py-0 w-2/12" href="#top">
+<button
+	on:click
+	class={`btn variant-outline-secondary flex flex-row gap-1 relative ${$$props.class}`}
+>
+	<Avatar width="w-10" src={game.avatarUrl} rounded="rounded-l-md" />
+	<div class="px-1 py-0 w-2/12">
 		<span>{event.name}</span>
-	</a>
-	<a class="px-1 py-0 w-3/12 text-right" href="/">
+	</div>
+	<div class="px-1 py-0 w-3/12 text-right">
 		<span>{event.teamA}</span>
-	</a>
-	<a class="py-0 w-2/12 flex flex-col gap-0 items-center" href="/">
+	</div>
+	<div class="py-0 w-2/12 flex flex-col gap-0 items-center border-x-2">
 		{#if event.status === 'upcoming'}
 			<span class="mb-1">{dayjs(event.startAt).format('HH:00')}</span>
 		{/if}
@@ -37,15 +36,13 @@
 			<span class="mx-2">:</span>
 			<span>{event.pointsB}</span>
 		</div>
-	</a>
-	<a class="py-0 rounded-r-md w-3/12" href="/">
+	</div>
+	<div class="py-0 rounded-r-md w-3/12">
 		<span>{event.teamB}</span>
-	</a>
+	</div>
 	{#if event.status === 'live'}
 		<span class="absolute top-0 right-0 inline-block">
-			<span class="inline-block bg-red-500 text-white px-2 py-auto rounded-full animate-bounce">
-				Live now
-			</span>
+			<span class="inline-block bg-primary px-2 rounded-full animate-bounce"> Live </span>
 		</span>
 	{/if}
-</div>
+</button>

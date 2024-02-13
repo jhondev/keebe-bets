@@ -20,6 +20,7 @@ model Event {
   teamB     String
   pointsA   String
   pointsB   String
+  streamUrl String?
   winner    String?
   startAt   DateTime?
   createdAt DateTime

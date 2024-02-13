@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 
+	export let text: string = 'Login';
 	export let containerClass: string = '';
 
 	let client: AuthClient;
@@ -15,6 +16,7 @@
 		app.update(() => ({
 			loggedIn: true,
 			principal: identity.getPrincipal(),
+			balance: 0,
 			escrow: createEscrowActor({ agentOptions: { identity } }),
 			ledger: createLedgerActor({ agentOptions: { identity } }),
 			logout: async () => {
@@ -47,6 +49,6 @@
 	<slot />
 {:else}
 	<div class={containerClass}>
-		<Button class={$$props.class} on:click={login}>Login</Button>
+		<Button class={$$props.class} on:click={login}>{text}</Button>
 	</div>
 {/if}
