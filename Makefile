@@ -15,7 +15,11 @@ web:
 	cd web && pnpm dev
 
 migrate:
-	cd web && pnpx prisma migrate reset && pnpm drizzle-kit introspect:sqlite
+	cd web && pnpx prisma migrate dev && pnpx prisma migrate deploy
+
+reset:
+	cd web && pnpx prisma migrate reset
+	make seed
 
 seed:
 	cd web && pnpm seed

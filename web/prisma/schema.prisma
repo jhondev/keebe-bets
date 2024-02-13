@@ -12,15 +12,16 @@ datasource db {
 
 // create tables for events and bets
 model Event {
-  id        BigInt   @id
+  id        BigInt    @id
   name      String
   gameSlug  String
   status    String
   teamA     String
   teamB     String
-  pointsA   Int?
-  pointsB   Int?
+  pointsA   String
+  pointsB   String
   winner    String?
+  startAt   DateTime?
   createdAt DateTime
   bets      Bet[]
 }

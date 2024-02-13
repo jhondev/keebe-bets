@@ -1,5 +1,5 @@
-import type { PropousalBet } from "$lib/models/interfaces"
-import { users } from "../users"
+import type { PropousalBet } from '$lib/models/interfaces';
+import { users } from '../users';
 
 export type Game = {
 	slug: string;
@@ -31,10 +31,10 @@ export const games: Map<string, Game> = new Map([
 		}
 	],
 	[
-		'dota',
+		'dota2',
 		{
-			slug: 'dota',
-			name: 'Dota',
+			slug: 'dota2',
+			name: 'Dota2',
 			boxUrl: '/public/box-dota.png',
 			bannerUrl: '/public/banner-dota.png',
 			avatarUrl: '/public/avatar-dota.png'
@@ -116,15 +116,15 @@ export const getGame = (slug: string) => {
 
 // // Ejemplo de un listado de apuestas
 export const listPropousalBet: PropousalBet[] = [
-  {
-    user: Object.values(users)[0],
-    amount: 50,
-	status: false
-  },
-  {
-    user: Object.values(users)[1],
-    amount: 120,
-	status: true
-  },
-  // Agrega más apuestas según sea necesario
+	{
+		user: Object.values(users)[0],
+		amount: 50,
+		status: false
+	},
+	{
+		user: Object.values(users)[1],
+		amount: 120,
+		status: true
+	}
+	// Agrega más apuestas según sea necesario
 ];
