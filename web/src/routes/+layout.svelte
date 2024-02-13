@@ -4,55 +4,59 @@
 	import SideBarLeft from './side-bar-left.svelte';
 	import SideBarRight from './side-bar-right.svelte';
 	import { onMount } from 'svelte';
-	import {  users } from '$lib/apis/users';
+	import { users } from '$lib/apis/users';
 	import type { IUser } from '$lib/models/user';
-	import { dataBalances, propousalBetsStore, socketStore, userStorage } from '$lib/store/gameInfoStore';
-	import { io } from 'socket.io-client'
+	import {
+		dataBalances,
+		propousalBetsStore,
+		socketStore,
+		userStorage
+	} from '$lib/store/gameInfoStore';
+	import { io } from 'socket.io-client';
 
 	export let data;
-	let user:IUser | null = null;
-	let balance: number = 0
+	let user: IUser | null = null;
+	let balance: number = 0;
 	const { games } = data;
-	$: balans = $dataBalances
+	$: balans = $dataBalances;
 
-	onMount(() =>{
-		const params = new URLSearchParams(location.search)
-		const idUser = params.get('user') ?? ''
-		user = users[idUser]
-		userStorage.set(idUser)
+	onMount(() => {
+		const params = new URLSearchParams(location.search);
+		const idUser = params.get('user') ?? '';
+		user = users[idUser];
+		userStorage.set(idUser);
 
-		const unsubscribe = dataBalances.subscribe(value => {
-			balance =value[idUser]
-		})
-		const socket = io({query:{
-			uid:idUser
-		}})
+		const unsubscribe = dataBalances.subscribe((value) => {
+			balance = value[idUser];
+		});
+		const socket = io({
+			query: {
+				uid: idUser
+			}
+		});
 		socket.on('eventFromServer', (message) => {
-			console.log(message)
-		})
+			console.log(message);
+		});
 		socket.on('confirm-bet', (message) => {
 			dataBalances.update((values) => {
-				const stateActual = Object.assign(values)
-				const balanceActualUser = [stateActual[message.uid]]
-				stateActual[message.uid] = Number(balanceActualUser) - message.amount 
-				return stateActual
-			})
-		})
+				const stateActual = Object.assign(values);
+				const balanceActualUser = [stateActual[message.uid]];
+				stateActual[message.uid] = Number(balanceActualUser) - message.amount;
+				return stateActual;
+			});
+		});
 		socket.on('proposal-bet', (proposal) => {
-			propousalBetsStore.update(values => {
-				const stateActual = [...values]
-				stateActual.push(proposal)
-				return stateActual
-			})
-		})
-		socketStore.set(socket)
+			propousalBetsStore.update((values) => {
+				const stateActual = [...values];
+				stateActual.push(proposal);
+				return stateActual;
+			});
+		});
+		socketStore.set(socket);
 		return () => {
 			unsubscribe();
 		};
-	})
-	
-
-	
+	});
 </script>
 
 <AppShell
@@ -67,12 +71,15 @@
 					<strong class="text-2xl pl-4">Keebe Bets</strong>
 				</a>
 			</svelte:fragment>
-			<svelte:fragment slot="trail"> <h2 class="text-yellow-600 text-3xl pe-4">Balance: $ {balance}</h2>{user ? user.name: ''}</svelte:fragment>
+			<svelte:fragment slot="trail">
+				<h2 class="text-yellow-600 text-3xl pe-4">Balance: $ {balance}</h2>
+				{user ? user.name : ''}</svelte:fragment
+			>
 		</AppBar>
 	</svelte:fragment>
 
 	<svelte:fragment slot="sidebarLeft">
-		<SideBarLeft {games} />
+		<!-- <SideBarLeft {games} /> -->
 	</svelte:fragment>
 	<svelte:fragment slot="sidebarRight">
 		<SideBarRight />

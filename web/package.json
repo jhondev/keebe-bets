@@ -9,7 +9,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"seed": "vite-node --options.transformMode.ssr='/.*/' prisma/seed.ts"
 	},
 	"devDependencies": {
 		"@dfinity/agent": "^0.21.4",
@@ -24,11 +25,13 @@
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@tailwindcss/forms": "0.5.7",
 		"@tailwindcss/typography": "0.5.10",
+		"@types/better-sqlite3": "^7.6.9",
 		"@types/eslint": "8.56.0",
 		"@types/node": "20.11.7",
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
 		"autoprefixer": "10.4.17",
+		"better-sqlite3": "^9.4.1",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",
@@ -40,18 +43,13 @@
 		"svelte-check": "^3.6.0",
 		"tailwindcss": "3.4.1",
 		"tslib": "^2.4.1",
-		"typescript": "^5.0.0",
+		"typescript": "^5.3.3",
 		"vite": "^5.0.3",
+		"vite-node": "^1.2.2",
 		"vite-plugin-tailwind-purgecss": "0.2.0"
 	},
-	"type": "module",
-	"engines": {
-		"npm": "Please use pnpm instead of npm.",
-		"yarn": "Please use pnpm instead of yarn.",
-		"pnpm": ">= 8.0.0",
-		"node": ">=18.0.0"
-	},
 	"dependencies": {
+		"@prisma/client": "5.9.1",
 		"bits-ui": "^0.15.1",
 		"clsx": "^2.1.0",
 		"lucide-svelte": "^0.316.0",
@@ -59,5 +57,12 @@
 		"socket.io-client": "^4.7.4",
 		"tailwind-merge": "^2.2.1",
 		"tailwind-variants": "^0.1.20"
+	},
+	"type": "module",
+	"engines": {
+		"npm": "Please use pnpm instead of npm.",
+		"yarn": "Please use pnpm instead of yarn.",
+		"pnpm": ">= 8.0.0",
+		"node": ">=18.0.0"
 	}
 }

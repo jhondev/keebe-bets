@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// create tables for events and bets
+model Event {
+  id        BigInt   @id
+  name      String
+  gameSlug  String
+  status    String
+  teamA     String
+  teamB     String
+  pointsA   Int?
+  pointsB   Int?
+  winner    String?
+  createdAt DateTime
+  bets      Bet[]
+}
+
+model Bet {
+  id           BigInt            @id
+  event        Event             @relation(fields: [eventId], references: [id])
+  eventId      BigInt
+  created_by   User              @relation(fields: [creatorId], references: [id])
+  creatorId    String
+  amount       BigInt
+  participants BetParticipants[]
+}
+
+model BetParticipants {
+  bet           Bet    @relation(fields: [betId], references: [id])
+  betId         BigInt
+  participant   User   @relation(fields: [participantId], references: [id])
+  participantId String
+
+  @@id([betId, participantId])
+}
+
+model User {
+  id           String            @id
+  placedBets   Bet[]
+  acceptedBets BetParticipants[]
+}

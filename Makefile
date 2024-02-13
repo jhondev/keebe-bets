@@ -7,8 +7,21 @@ setup:
 		&& cp ./.env.example ./.env
 	cd web && pnpm install
 
-run api:
+run-api:
 	cd api && go run cmd/*.go
 
-run web:
+.PHONY: web
+web:
 	cd web && pnpm dev
+
+migrate:
+	cd web && pnpx prisma migrate reset && pnpm drizzle-kit introspect:sqlite
+
+seed:
+	cd web && pnpm seed
+
+gen-db:
+	cd web && pnpx prisma generate
+
+studio:
+	cd web && pnpx prisma studio
