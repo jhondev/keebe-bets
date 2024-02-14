@@ -1,41 +1,52 @@
 <script lang="ts">
-	import DialogBet from './dialog-bet.svelte';
-	import { propousalBetsStore } from '$lib/store/gameInfoStore';
-	import ProposeBet from './propose-bet.svelte';
-	$: betAccepted = $propousalBetsStore.filter((bet) => bet.status === true);
-	$: betPending = $propousalBetsStore.filter((bet) => bet.status === false);
+	import type { Event } from '@prisma/client';
+	import type { Socket } from 'socket.io-client';
+	import { Input } from '$lib/components/ui/input';
+	import { Button } from '$lib/components/ui/button';
+	import { socketStore, userStorage } from '$lib/store/gameInfoStore';
+	import { onMount } from 'svelte';
+	import { users } from '$lib/apis/users';
+
+	export let event: Event;
+
+	let amountProposal = 0;
+	$: idUser = $userStorage;
+
+	let socketUser: Socket;
+	onMount(() => {
+		console.log(userStorage);
+
+		const unsub1 = socketStore.subscribe((value: Socket) => {
+			socketUser = value;
+		});
+
+		return unsub1;
+	});
+
+	const makeProposal = () => {
+		console.log(amountProposal);
+		const user = users[String(idUser)];
+		console.log(event);
+		const proposal = {
+			user,
+			amount: amountProposal,
+			status: false
+		};
+		socketUser.emit('proposal-bet', proposal);
+	};
 </script>
 
-<ProposeBet />
-<div class="max-w-md mx-auto p-3 border m-4 rounded bg-gray-900">
-	<ul>
-		{#each betAccepted as { user, amount }}
-			<li class="flex">
-				<div class="w-2/5">
-					<h1>Accepted: $ {amount}</h1>
-				</div>
-				<div class="w-1/5">vs</div>
-				<div class="w-2/5"><h1>{user.name} {user.lastname}</h1></div>
-			</li>
-		{/each}
-	</ul>
-</div>
-
-<div class="max-w-md mx-auto p-4">
-	<ul>
-		{#each betPending as { user, amount }}
-			<li class="flex flex-row items-center mb-4">
-				<div class="w-1/4">
-					<img class="w-10 h-10 rounded-full mr-2" src={user.imageProfile} alt="Foto de usuario" />
-				</div>
-				<div class="w-1/2"><p class="font-bold">{`${user.name} ${user.lastname}`}</p></div>
-				<div class="w-1/3">
-					<h1>$ {amount}</h1>
-				</div>
-				<div class="w-1/3">
-					<DialogBet propousalBet={{ uid: user.id, amount }} />
-				</div>
-			</li>
-		{/each}
-	</ul>
+<div class="flex flex-col items-start gap-1 pb-11 pt-7">
+	<h1 class="text-3xl mb-5">Bet Amount</h1>
+	<div class="relative w-full">
+		<Input
+			type="number"
+			bind:value={amountProposal}
+			placeholder="Amount"
+			class="w-full text-center mb-3 text-3xl"
+		/>
+		<Button on:click={makeProposal} class="py-2 px-4 mb-2 rounded w-full text-2xl h-auto">
+			Make Proposal
+		</Button>
+	</div>
 </div>

@@ -1,3 +1,10 @@
-import PlaceBet from './place-bet.svelte';
+import EventBets from './event-bets.svelte';
 
-export { PlaceBet };
+export type Bet = {
+	id: bigint;
+	amount: number;
+	creatorId: string;
+	participants: { id: string }[];
+};
+
+export { EventBets };

@@ -6,6 +6,10 @@
 		<meta name="viewport" content="width=device-width" />
 		%sveltekit.head%
 	</head>
+	<script>
+		// Fix `global is not defined` error
+		global = window;
+	</script>
 	<body data-sveltekit-preload-data="hover" data-theme="crimson">
 		<div style="display: contents" class="h-full overflow-hidden">%sveltekit.body%</div>
 	</body>

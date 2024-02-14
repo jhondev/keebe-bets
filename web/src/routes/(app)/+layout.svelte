@@ -13,6 +13,7 @@
 	} from '$lib/store/gameInfoStore';
 	import { io } from 'socket.io-client';
 	import AuthButton from '$lib/components/auth/auth-button.svelte';
+	import Header from './header.svelte';
 
 	export let data;
 	let user: IUser | null = null;
@@ -65,19 +66,7 @@
 	slotPageContent="container flex flex-col h-full mx-auto px-5 py-4"
 >
 	<svelte:fragment slot="header">
-		<AppBar>
-			<svelte:fragment slot="lead">
-				<a href="/" class="">
-					<strong class="text-2xl pl-4">Keebe Bets</strong>
-				</a>
-			</svelte:fragment>
-			<svelte:fragment slot="trail">
-				<AuthButton>
-					<h2 class="text-yellow-600 text-3xl pe-4">Balance: $ {balance}</h2>
-					{user ? user.name : ''}
-				</AuthButton>
-			</svelte:fragment>
-		</AppBar>
+		<Header />
 	</svelte:fragment>
 
 	<!-- <svelte:fragment slot="sidebarLeft">

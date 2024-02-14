@@ -15,7 +15,7 @@ const webSocketServer = {
 		io.on('connection', (socket) => {
 			listSocketsConnected.push(socket);
 			console.log(socket.handshake.query);
-			socket.emit('eventFromServer', 'Hello, World 👋');
+			socket.emit('eventFromServer', 'connected 👋');
 			socket.on('accept-bet', (value) => {
 				const socketMessage = listSocketsConnected.find(
 					(socket) => String(socket.handshake.query.uid) === String(value.uid)
