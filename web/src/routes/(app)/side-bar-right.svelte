@@ -7,7 +7,6 @@
 	$: event = $eventStore.selected;
 	$: streamUrl = (() => {
 		const url = event?.streamUrl ?? '/public/next-match-06.jpeg';
-		console.log('executing streamurl');
 		return url.includes('jpeg') ? `/frames?src=${url}` : url;
 	})();
 </script>

@@ -6,9 +6,12 @@
 	import { app } from '$lib/store/auth';
 	import { formatAmount } from '$lib/utils';
 	import Separator from '../ui/separator/separator.svelte';
+	import { onMount } from 'svelte';
+	import { io } from 'socket.io-client';
 
 	export let event: Event;
 
+	let placeBetDialogShown = false;
 	let bets: Bet[] = [];
 	const userId = $app.principal?.toString();
 	// Note: unoptimized code for demonstration purposes
@@ -23,12 +26,20 @@
 	const loadBets = async (id: bigint) => {
 		const response = await fetch(`/api/events/${id}/bets`);
 		bets = await response.json();
-		console.log(bets);
 	};
+
+	onMount(() => {
+		const socket = io({});
+		socket.on('bet-placed', (bet) => {
+			// TODO: review multiple calls
+			placeBetDialogShown = false;
+			if (bet.eventId == event.id) loadBets(event.id);
+		});
+	});
 </script>
 
 <div class="mb-3">
-	<PlaceBetDialog {event} />
+	<PlaceBetDialog {event} shown={placeBetDialogShown} />
 </div>
 {#if bets.length === 0}
 	<div class="pt-16 text-center">
@@ -40,6 +51,7 @@
 			{#each placedBets as bet}
 				<li class="flex justify-between px-4 py-3 rounded-lg border border-primary-900">
 					<h1>Placed Bet: {formatAmount(bet.amount)} ICP</h1>
+					<p class="font-bold w-24 truncate text-ellipsis inline-block">{bet.winner}</p>
 					<h1>Participants: {bet.participants.length}</h1>
 				</li>
 			{/each}
@@ -49,7 +61,7 @@
 			{#each takenBets as bet}
 				<li class="flex justify-between px-4 py-3 rounded-lg border border-secondary-700">
 					<h1>Taken Bet: {formatAmount(bet.amount)} ICP</h1>
-					<p class="font-bold w-24 truncate text-ellipsis inline-block">{bet.creatorId}</p>
+					<p class="font-bold w-24 truncate text-ellipsis inline-block">{bet.winner}</p>
 					<h1>Participants: {bet.participants.length}</h1>
 				</li>
 			{/each}
@@ -64,9 +76,9 @@
 			{#each openBets as bet}
 				<li class="flex justify-between px-4 py-3 rounded-lg border border-tertiary-700">
 					<h1>Bet: {formatAmount(bet.amount)} ICP</h1>
-					<p class="font-bold w-24 truncate text-ellipsis inline-block">{bet.creatorId}</p>
+					<p class="font-bold w-24 truncate text-ellipsis inline-block">{bet.winner}</p>
 					<!-- <div class="w-1/3"> -->
-					<TakeBetDialog {bet} />
+					<TakeBetDialog {event} {bet} />
 					<!-- </div> -->
 				</li>
 			{/each}

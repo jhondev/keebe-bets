@@ -2,15 +2,14 @@
 	import type { Event } from '@prisma/client';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { flyAndScale } from '$lib/components/ui/utils';
-	import { Button } from '../ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import PlaceBet from './place-bet.svelte';
 
 	export let event: Event;
-	let dialogOpen = false;
+	export let shown = false;
 </script>
 
-<Dialog.Root bind:open={dialogOpen}>
+<Dialog.Root bind:open={shown}>
 	<Dialog.Trigger class="btn variant-filled-primary w-full">Place Bet</Dialog.Trigger>
 	<Dialog.Portal>
 		<Dialog.Content

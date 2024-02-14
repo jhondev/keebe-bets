@@ -7,12 +7,14 @@
 	import { onMount } from 'svelte';
 	import { app } from '$lib/store/auth';
 	import { genUUID } from '$lib/utils';
+	import { Progress } from '$lib/components/ui/progress';
 
 	export let event: Event;
 
 	let amount = 0;
 	let winner = '';
 	let placingStatus = '';
+	let placingPct = 0;
 	const userId = $app.principal?.toString();
 
 	let socket: Socket;
@@ -30,19 +32,31 @@
 			creatorId: userId,
 			eventId: event.id
 		};
-
-		// TODO: handle errors
+		// - emit bet-placed event
+		// socket.emit('bet-placed', bet);
+		// return;
 
 		// steps
 		// - prepare bet: save bet to db
 		placingStatus = 'preparing bet';
-		await fetch(`/api/events/${event.id}/bets`, {
-			method: 'POST',
-			body: JSON.stringify(bet)
-		});
+		placingPct = 20;
+		try {
+			const response = await fetch(`/api/events/${event.id}/bets`, {
+				method: 'POST',
+				body: JSON.stringify(bet)
+			});
+			if (!response.ok) {
+				placingStatus = 'Error: ' + response.statusText;
+				return;
+			}
+		} catch (e) {
+			placingStatus = 'Error: ' + e;
+			return;
+		}
 
 		// - deposit icp: call ledger canister to make the bet deposit
 		placingStatus = 'depositing icp';
+		placingPct = 40;
 		if (!$app.escrow || !$app.ledger) return;
 		const depositAddress = await $app.escrow.getDepositAddress(bet.id);
 		const tresult = await $app.ledger.transfer({
@@ -60,6 +74,7 @@
 
 		// - place bet: call escrow canister to place the bet in ICP
 		placingStatus = 'placing bet';
+		placingPct = 60;
 		const result = await $app.escrow.placeBet(event.id, bet.id, bet.winner, bet.amount);
 		if ('Err' in result) {
 			placingStatus = 'Error: ' + result.Err[1];
@@ -71,24 +86,35 @@
 
 		// - refresh balance: call ledger canister to refresh user balance
 		placingStatus = 'refreshing balance';
+		placingPct = 80;
 		await $app.refreshBalance();
+		placingStatus = 'Bet placed';
+		placingPct = 100;
 
 		// - emit bet-placed event
 		socket.emit('bet-placed', bet);
 	};
 </script>
 
-<div class="flex flex-col items-start gap-3 pb-11 pt-7">
-	<div class="flex flex-row gap-2 text-2xl mb-5 mx-auto">
-		<h1 class="">Amount:</h1>
-		<Input type="number" bind:value={amount} placeholder="Amount" class="w-40 h-9 text-2xl py-1" />
+<div class="flex flex-col items-start gap-4 pb-5 pt-7">
+	<div class="flex flex-row gap-2 text-2xl">
+		<span>Amount:</span>
+		<Input type="number" bind:value={amount} placeholder="Amount" class="h-10 text-2xl py-1" />
 		<span>ICP</span>
 	</div>
-	{#if placingStatus}
-		<div class="text-xl text-center">
-			{placingStatus}...
-		</div>
-	{:else}
-		<Button on:click={placeBet} class="w-full text-xl">Place Bet</Button>
-	{/if}
+	<div class="w-[90%] flex flex-row gap-2 text-2xl">
+		<span>Winner:</span>
+		<select class="select ml-2" bind:value={winner} placeholder="winner">
+			<option value={event.teamA}>{event.teamA}</option>
+			<option value={event.teamB}>{event.teamB}</option>
+		</select>
+	</div>
+	<div class="text-lg text-center w-full pt-5">
+		{#if placingStatus}
+			<Progress value={placingPct} />
+			<div class="mt-2">{placingStatus}</div>
+		{:else}
+			<Button on:click={placeBet} class="w-full text-xl">Place Bet</Button>
+		{/if}
+	</div>
 </div>

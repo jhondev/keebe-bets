@@ -19,7 +19,7 @@
 					{$app.principal}
 				</span>
 				<span>{formatAmount($app.balance)} ICP</span>
-				<Button variant="secondary">Logout</Button>
+				<Button variant="secondary" on:click={$app.logout}>Logout</Button>
 			</div>
 		</AuthButton>
 	</svelte:fragment>

@@ -127,21 +127,6 @@ pub async fn get_pot(event_id: EventId, bet_id: BetId) -> CallResult<Nat> {
     })
 }
 
-#[update(name = "getCallerBalance")]
-#[candid_method(rename = "getCallerBalance")]
-pub async fn get_caller_balance() -> CallResult<Nat> {
-    let balance = ledger::get_balance(&caller(), &DEFAULT_SUBACCOUNT).await?;
-    Ok(balance.e8s().into())
-}
-
-#[update(name = "getCanisterBalance")]
-#[candid_method(rename = "getCanisterBalance")]
-pub async fn get_canister_balance() -> CallResult<Nat> {
-    let canister_id = ic_cdk::api::id();
-    let balance = ledger::get_balance(&canister_id, &DEFAULT_SUBACCOUNT).await?;
-    Ok(balance.e8s().into())
-}
-
 #[query(name = "getDepositAddress")]
 #[candid_method(rename = "getDepositAddress")]
 pub fn get_deposit_address(bet_id: BetId) -> AccountIdentifier {
@@ -155,6 +140,27 @@ pub fn get_deposit_address(bet_id: BetId) -> AccountIdentifier {
 pub fn get_bet_winners(event_id: EventId, bet_id: BetId) -> CallResult<Vec<Principal>> {
     let winners = STATE.with(|s| s.borrow().maker.get_bet_winners(event_id, bet_id))?;
     Ok(winners)
+}
+
+#[update(name = "getCanisterBalance")]
+#[candid_method(rename = "getCanisterBalance")]
+pub async fn get_canister_balance() -> CallResult<Nat> {
+    let canister_id = ic_cdk::api::id();
+    let balance = ledger::get_balance(&canister_id, &DEFAULT_SUBACCOUNT).await?;
+    Ok(balance.e8s().into())
+}
+
+#[update(name = "getCallerBalance")]
+#[candid_method(rename = "getCallerBalance")]
+pub async fn get_caller_balance() -> CallResult<Nat> {
+    let balance = ledger::get_balance(&caller(), &DEFAULT_SUBACCOUNT).await?;
+    Ok(balance.e8s().into())
+}
+
+#[query(name = "getCallerAddress")]
+#[candid_method(rename = "getCallerAddress")]
+pub fn get_caller_address() -> String {
+    AccountIdentifier::new(&caller(), &DEFAULT_SUBACCOUNT).to_string()
 }
 
 // Create a get_candid_pointer method so that dfx can execute it to extract candid definition.

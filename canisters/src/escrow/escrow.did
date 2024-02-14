@@ -19,6 +19,8 @@ service : {
   distributePrize : (nat64, nat64) -> (Result);
   getBetBalance : (nat64) -> (Result_1);
   getBetWinners : (nat64, nat64) -> (Result_2);
+  getCallerAddress : () -> (text);
+  getCallerBalance : () -> (Result_1);
   getCanisterBalance : () -> (Result_1);
   getDepositAddress : (nat64) -> (vec nat8);
   getPot : (nat64, nat64) -> (Result_1);

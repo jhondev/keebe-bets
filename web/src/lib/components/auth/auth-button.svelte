@@ -12,25 +12,23 @@
 	let client: AuthClient;
 	let loading = false;
 
-	const getBalance = async (refreshing: boolean = false) => {
-		if (!$app.loggedIn || !$app.escrow) return;
-		loading = true && !refreshing;
-		const balance = await $app.escrow.getCallerBalance();
-		loading = false;
-		return balance;
+	const getBalance = async () => {
+		if (!$app.loggedIn || !$app.escrow) throw 'not logged in';
+		const result = await $app.escrow.getCallerBalance();
+		if ('Err' in result) throw 'Error: ' + result.Err[1];
+		return result.Ok;
 	};
 
 	const handleAuth = async () => {
 		const identity = client.getIdentity();
-		const balance = await getBalance();
 		app.set({
 			loggedIn: true,
 			principal: identity.getPrincipal(),
-			balance: balance,
+			balance: BigInt(0),
 			escrow: createEscrowActor({ agentOptions: { identity } }),
 			ledger: createLedgerActor({ agentOptions: { identity } }),
 			refreshBalance: async () => {
-				const balance = await getBalance(true);
+				const balance = await getBalance();
 				app.update((a) => ({ ...a, balance }));
 			},
 			logout: async () => {
@@ -38,6 +36,9 @@
 				app.set(init);
 			}
 		});
+		loading = true;
+		await $app.refreshBalance();
+		loading = false;
 	};
 	onMount(async () => {
 		if (!client) {

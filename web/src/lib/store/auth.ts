@@ -7,17 +7,17 @@ import { writable } from 'svelte/store';
 export type AppStore = {
 	loggedIn: boolean;
 	principal: Principal | undefined;
-	balance: number;
+	balance: bigint;
 	escrow: ActorSubclass<_ESCROW_SERVICE> | undefined;
 	ledger: ActorSubclass<_LEDGER_SERVICE> | undefined;
 	refreshBalance: () => Promise<void>;
 	logout: () => Promise<void>;
 };
 
-export const init = {
+export const init: AppStore = {
 	loggedIn: false,
 	principal: undefined,
-	balance: 0,
+	balance: BigInt(0),
 	escrow: undefined,
 	ledger: undefined,
 	refreshBalance: async () => {},

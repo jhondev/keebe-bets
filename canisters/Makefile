@@ -12,7 +12,7 @@ build:
 	
 deploy:
 	make build
-	dfx deploy
+	dfx deploy escrow
 	make gen
 
 deploy-play:

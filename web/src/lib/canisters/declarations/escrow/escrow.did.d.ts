@@ -21,6 +21,8 @@ export interface _SERVICE {
   'distributePrize' : ActorMethod<[bigint, bigint], Result>,
   'getBetBalance' : ActorMethod<[bigint], Result_1>,
   'getBetWinners' : ActorMethod<[bigint, bigint], Result_2>,
+  'getCallerAddress' : ActorMethod<[], string>,
+  'getCallerBalance' : ActorMethod<[], Result_1>,
   'getCanisterBalance' : ActorMethod<[], Result_1>,
   'getDepositAddress' : ActorMethod<[bigint], Uint8Array | number[]>,
   'getPot' : ActorMethod<[bigint, bigint], Result_1>,

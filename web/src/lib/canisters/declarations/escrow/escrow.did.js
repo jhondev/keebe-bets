@@ -26,6 +26,8 @@ export const idlFactory = ({ IDL }) => {
     'distributePrize' : IDL.Func([IDL.Nat64, IDL.Nat64], [Result], []),
     'getBetBalance' : IDL.Func([IDL.Nat64], [Result_1], []),
     'getBetWinners' : IDL.Func([IDL.Nat64, IDL.Nat64], [Result_2], []),
+    'getCallerAddress' : IDL.Func([], [IDL.Text], []),
+    'getCallerBalance' : IDL.Func([], [Result_1], []),
     'getCanisterBalance' : IDL.Func([], [Result_1], []),
     'getDepositAddress' : IDL.Func([IDL.Nat64], [IDL.Vec(IDL.Nat8)], []),
     'getPot' : IDL.Func([IDL.Nat64, IDL.Nat64], [Result_1], []),
