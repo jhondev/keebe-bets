@@ -22,8 +22,8 @@ const webSocketServer = {
 				);
 				socketMessage?.emit('confirm-bet', value);
 			});
-			socket.on('proposal-bet', (value) => {
-				io.emit('proposal-bet', value);
+			socket.on('bet-placed', (value) => {
+				io.emit('bet-placed', value);
 			});
 			socket.on('disconnect', () => {
 				listSocketsConnected = [...listSocketsConnected.filter((sck) => sck !== socket)];

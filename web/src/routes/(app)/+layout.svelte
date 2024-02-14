@@ -1,61 +1,37 @@
 <script lang="ts">
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
-	import SideBarLeft from './side-bar-left.svelte';
+	import { AppShell } from '@skeletonlabs/skeleton';
 	import SideBarRight from './side-bar-right.svelte';
 	import { onMount } from 'svelte';
-	import { users } from '$lib/apis/users';
-	import type { IUser } from '$lib/models/user';
-	import {
-		dataBalances,
-		propousalBetsStore,
-		socketStore,
-		userStorage
-	} from '$lib/store/gameInfoStore';
+	import { socketStore } from '$lib/store/socket';
 	import { io } from 'socket.io-client';
-	import AuthButton from '$lib/components/auth/auth-button.svelte';
 	import Header from './header.svelte';
 
-	export let data;
-	let user: IUser | null = null;
-	let balance: number = 0;
-	const { games } = data;
-	$: balans = $dataBalances;
+	// export let data;
 
 	onMount(() => {
-		const params = new URLSearchParams(location.search);
-		const idUser = params.get('user') ?? '';
-		user = users[idUser];
-		userStorage.set(idUser);
-
-		const unsubscribe = dataBalances.subscribe((value) => {
-			balance = value[idUser];
-		});
 		const socket = io({
-			query: {
-				uid: idUser
-			}
+			// query: {
+			// 	uid: idUser
+			// }
 		});
-		socket.on('eventFromServer', (message) => {
-			console.log(message);
+		socket.on('bet-placed', (bet) => {
+			// propousalBetsStore.update((values) => {
+			// 	const stateActual = [...values];
+			// 	stateActual.push(proposal);
+			// 	return stateActual;
+			// });
 		});
-		socket.on('confirm-bet', (message) => {
-			dataBalances.update((values) => {
-				const stateActual = Object.assign(values);
-				const balanceActualUser = [stateActual[message.uid]];
-				stateActual[message.uid] = Number(balanceActualUser) - message.amount;
-				return stateActual;
-			});
-		});
-		socket.on('proposal-bet', (proposal) => {
-			propousalBetsStore.update((values) => {
-				const stateActual = [...values];
-				stateActual.push(proposal);
-				return stateActual;
-			});
+		socket.on('confirm-bet', (bet) => {
+			// dataBalances.update((values) => {
+			// 	const stateActual = Object.assign(values);
+			// 	const balanceActualUser = [stateActual[message.uid]];
+			// 	stateActual[message.uid] = Number(balanceActualUser) - message.amount;
+			// 	return stateActual;
+			// });
 		});
 		socketStore.set(socket);
 		return () => {
-			unsubscribe();
+			// unsubscribe();
 		};
 	});
 </script>

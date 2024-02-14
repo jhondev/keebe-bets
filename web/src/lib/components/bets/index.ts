@@ -4,7 +4,7 @@ export type Bet = {
 	id: bigint;
 	amount: number;
 	creatorId: string;
-	participants: { id: string }[];
+	participants: { participantId: string }[];
 };
 
 export { EventBets };

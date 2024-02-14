@@ -1,5 +1,6 @@
 <script>
 	import AuthButton from '$lib/components/auth/auth-button.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import { app } from '$lib/store/auth';
 	import { AppBar } from '@skeletonlabs/skeleton';
 </script>
@@ -12,13 +13,13 @@
 	</svelte:fragment>
 	<svelte:fragment slot="trail">
 		<AuthButton>
-			<h2 class="h3">
+			<div class="flex gap-2 text-xl">
 				<span title={$app.principal?.toString()} class="w-24 truncate text-ellipsis inline-block">
 					{$app.principal}
 				</span>
-				{$app.balance} ICP
-			</h2>
-			<!-- {user ? user.name : ''} -->
+				<span> {$app.balance} ICP</span>
+				<Button variant="secondary">Logout</Button>
+			</div>
 		</AuthButton>
 	</svelte:fragment>
 </AppBar>
