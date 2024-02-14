@@ -33,6 +33,7 @@ model Bet {
   eventId      BigInt
   created_by   User              @relation(fields: [creatorId], references: [id])
   creatorId    String
+  winner       String
   amount       BigInt
   status       String            @default("placing")
   participants BetParticipants[]

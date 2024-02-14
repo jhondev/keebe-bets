@@ -2,6 +2,7 @@
 	import AuthButton from '$lib/components/auth/auth-button.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { app } from '$lib/store/auth';
+	import { formatAmount } from '$lib/utils';
 	import { AppBar } from '@skeletonlabs/skeleton';
 </script>
 
@@ -17,7 +18,7 @@
 				<span title={$app.principal?.toString()} class="w-24 truncate text-ellipsis inline-block">
 					{$app.principal}
 				</span>
-				<span> {$app.balance} ICP</span>
+				<span>{formatAmount($app.balance)} ICP</span>
 				<Button variant="secondary">Logout</Button>
 			</div>
 		</AuthButton>

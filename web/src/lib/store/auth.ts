@@ -10,14 +10,18 @@ export type AppStore = {
 	balance: number;
 	escrow: ActorSubclass<_ESCROW_SERVICE> | undefined;
 	ledger: ActorSubclass<_LEDGER_SERVICE> | undefined;
+	refreshBalance: () => Promise<void>;
 	logout: () => Promise<void>;
 };
 
-export const app = writable<AppStore>({
+export const init = {
 	loggedIn: false,
 	principal: undefined,
 	balance: 0,
 	escrow: undefined,
 	ledger: undefined,
+	refreshBalance: async () => {},
 	logout: async () => {}
-});
+};
+
+export const app = writable<AppStore>(init);

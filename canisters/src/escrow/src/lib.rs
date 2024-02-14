@@ -12,7 +12,7 @@ use bookmaker::BookMaker;
 use candid::{candid_method, Nat, Principal};
 use errors::reject;
 use event::{EventErr, EventId};
-use ic_cdk::{api::call::CallResult, query, update};
+use ic_cdk::{api::call::CallResult, caller, query, update};
 use ic_ledger_types::{AccountIdentifier, Subaccount, Tokens, DEFAULT_SUBACCOUNT};
 use utils::{val_auth, Convert};
 
@@ -125,6 +125,13 @@ pub async fn get_pot(event_id: EventId, bet_id: BetId) -> CallResult<Nat> {
         let bet = state.maker.get_bet(event_id, bet_id)?;
         Ok(bet.pot.into())
     })
+}
+
+#[update(name = "getCallerBalance")]
+#[candid_method(rename = "getCallerBalance")]
+pub async fn get_caller_balance() -> CallResult<Nat> {
+    let balance = ledger::get_balance(&caller(), &DEFAULT_SUBACCOUNT).await?;
+    Ok(balance.e8s().into())
 }
 
 #[update(name = "getCanisterBalance")]
