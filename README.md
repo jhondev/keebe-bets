@@ -1,5 +1,7 @@
 # Keebe Bets
 
+[This Project is still in development]
+
 ## Introduction
 
 This project is a small betting platform PoC built with SvelteKit, SQLite, and the Internet Computer Protocol (ICP) with canisters written in Rust. It uses ICP tokens as a value of exchange for bets. The user can place bets for upcoming matches and take bets from different events. The authentication is made using the ICP identity canister, and the escrow canister act as a bookmaker.
