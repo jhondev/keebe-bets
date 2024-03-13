@@ -39,7 +39,7 @@ The system uses three canisters:
 
 ## Setup
 
-### Prerequites
+### Prerequisites
 
 - Rust (https://rustup.rs)
 - IC SDK (https://internetcomputer.org/docs/current/developer-docs/getting-started/install/)
